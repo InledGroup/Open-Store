@@ -137,7 +137,7 @@ Para finalizar pulse en el switch dentro del recuadro de la extensión y actíve
     shortDescription: 'Muestra la cruz de Cristo para que la presencia de Dios esté contigo.',
     description: `# Cristo te acompaña en tu Linux
 
-Ya sea que estés disfrutando de las bondades de usar Linux o te estés rompiendo los sesos para hacer que Ubuntu funcione, la Cruz de Cristo estará siempre contigo y, por tanto, Dios también.
+Ya sea que estés disfrutando de las bondades de usar Linux, la Cruz de Cristo estará siempre contigo y, por tanto, Dios también.
 
 Hay múltiples formas de estar acompañados por Dios...
 
