@@ -1,0 +1,337 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Descubre las mejores aplicaciones para tu dispositivo' } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content={description}>
+  <title>{title}</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script is:inline>
+    // Prevent flash of wrong theme
+    (function() {
+      const theme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="/" class="logo">
+        <img class="logo-icon" src="https://inled.es/upload/inled-logo-full.png"></img>
+        <span class="logo-text">| Open Store</span>
+      </a>
+      <div class="header-actions">
+        <nav class="nav">
+          <a href="/" class="nav-link">Inicio</a>
+          <a href="#" class="nav-link">Categorías</a>
+          <a href="/api/docs" class="nav-link">API</a>
+        </nav>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Cambiar tema">
+          <svg class="sun-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 2V4M10 16V18M18 10H16M4 10H2M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <svg class="moon-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M17 10.5C16.1 13.5 13.4 15.8 10.1 16C6 16.2 2.5 12.9 2.5 9C2.5 5.7 4.7 2.9 7.7 2.1C8.3 1.9 8.9 2.5 8.6 3.1C8 4.4 7.6 5.9 7.6 7.4C7.6 11.3 10.7 14.4 14.6 14.4C15.5 14.4 16.4 14.2 17.2 13.9C17.8 13.7 18.4 14.2 18.2 14.8C18 15.1 17.8 15.3 17.6 15.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>Licenciado bajo GNU GPLv3.0 por Inled Group. Si es abierto, mucho mejor.</p>
+    </div>
+  </footer>
+</body>
+</html>
+
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --primary: #3db6ff;
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border: #e0e0e0;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --header-bg: rgba(248, 249, 250, 0.9);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  [data-theme="dark"] {
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f2e;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --border: #2d3748;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --header-bg: rgba(26, 31, 46, 0.9);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex: 1;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+
+  .header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+    transition: var(--transition);
+  }
+
+  .logo:hover {
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  .logo-icon {
+    width: auto;
+    height: 30px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav {
+    display: flex;
+    gap: 30px;
+  }
+
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    color: var(--text-primary);
+    position: relative;
+  }
+
+  .theme-toggle:hover {
+    background: var(--bg-primary);
+    border-color: var(--primary);
+    transform: rotate(20deg) scale(1.1);
+  }
+
+  .theme-toggle .sun-icon,
+  .theme-toggle .moon-icon {
+    position: absolute;
+    transition: var(--transition);
+  }
+
+  .theme-toggle .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  .theme-toggle .moon-icon {
+    opacity: 0;
+    transform: rotate(90deg) scale(0);
+  }
+
+  [data-theme="dark"] .theme-toggle .sun-icon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0);
+  }
+
+  [data-theme="dark"] .theme-toggle .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+
+  .nav-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: var(--transition);
+  }
+
+  .nav-link:hover {
+    color: var(--primary);
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
+  /* Footer */
+  .footer {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    padding: 30px 0;
+    margin-top: 80px;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  /* Utilities */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #2a9de6;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-primary);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .nav {
+      display: none;
+    }
+
+    .logo-text {
+      font-size: 1.1rem;
+    }
+
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>
+
+<script>
+  // Theme toggle functionality
+  function initTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    html.setAttribute('data-theme', currentTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      });
+    }
+  }
+
+  // Run on page load
+  initTheme();
+
+  // Re-run after navigation (for SPA-like behavior)
+  document.addEventListener('astro:after-swap', initTheme);
+</script>

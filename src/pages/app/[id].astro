@@ -1,0 +1,764 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { apps } from '../../data/apps';
+import type { App } from '../../types/app';
+
+export function getStaticPaths() {
+  return apps.map((app) => ({
+    params: { id: app.id },
+    props: { app }
+  }));
+}
+
+interface Props {
+  app: App;
+}
+
+const { app } = Astro.props;
+
+// Función para convertir markdown simple a HTML
+function markdownToHtml(markdown: string): string {
+  return markdown
+    // Títulos
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    // Negrita
+    .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+    // Listas
+    .replace(/^\- (.*$)/gim, '<li>$1</li>')
+    // Párrafos
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hl]|<li)(.+)$/gim, '<p>$1</p>')
+    // Limpiar
+    .replace(/<\/li>\n<li>/g, '</li><li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+}
+
+const descriptionHtml = markdownToHtml(app.description);
+---
+
+<Layout title={`${app.title} - Inled Open Store`} description={app.shortDescription}>
+  <div class="app-detail">
+    <!-- Header de la app -->
+    <div class="app-header">
+      <div class="container">
+        <a href="/" class="back-link">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Volver
+        </a>
+
+        <div class="app-header-content">
+          <div class="app-icon-large">
+            <img src={app.icon} alt={`${app.title} icon`} class="icon-image-large" />
+          </div>
+
+          <div class="app-header-info">
+            <h1 class="app-title">{app.title}</h1>
+            <p class="app-short-desc">{app.shortDescription}</p>
+
+            <div class="app-platforms-list">
+              {app.platform.map((platform) => (
+                <span class="platform-badge-large">{platform}</span>
+              ))}
+            </div>
+
+            <div class="app-actions">
+              {app.downloads.github && (
+                <a href={app.downloads.github} target="_blank" rel="noopener noreferrer" class="btn btn-primary download-btn" data-download="github">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 13V3M10 13L7 10M10 13L13 10M3 17H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Descargar
+                </a>
+              )}
+
+              {app.downloads.sourceforge && (
+                <a href={app.downloads.sourceforge} target="_blank" rel="noopener noreferrer" class="btn btn-primary download-btn" data-download="sourceforge">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M10 13V3M10 13L7 10M10 13L13 10M3 17H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Descargar desde SourceForge
+                </a>
+              )}
+
+              <a href={app.downloads.sourceCode} target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M6 14L2 10L6 6M14 6L18 10L14 14M11 3L9 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Código Fuente
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="app-content">
+      <div class="container">
+        <div class="content-grid">
+          <!-- Descripción -->
+          <div class="description-section">
+            <div class="content-card description-card">
+              <div class="markdown-content" set:html={descriptionHtml} />
+            </div>
+
+            <!-- Screenshots -->
+            {app.screenshots.length > 0 && (
+              <div class="content-card">
+                <h2 class="card-title">Imagenes relacionadas</h2>
+                <div class="screenshots-grid">
+                  {app.screenshots.map((screenshot, index) => (
+                    <div class="screenshot-item screenshot-anim" data-index={index} role="button" tabindex="0">
+                      <img src={screenshot} alt={`${app.title} screenshot ${index + 1}`} class="screenshot-image" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <!-- Video -->
+            {app.video && (
+              <div class="content-card video-card">
+                <h2 class="card-title">Videos relacionados</h2>
+                <div class="video-container">
+                  <iframe
+                    src={app.video}
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            <div class="content-card">
+              <h3 class="card-title">Información</h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">Plataformas</span>
+                  <span class="info-value">{app.platform.length}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Tipo</span>
+                  <span class="info-value">
+                    {app.platform.some(p => ['Chrome', 'Firefox', 'Safari', 'Edge'].includes(p)) ? 'Extensión' : 'App Nativa'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-card quick-download">
+              <h3 class="card-title">Descarga Rápida</h3>
+              <div class="download-options">
+                {app.downloads.github && (
+                  <a href={app.downloads.github} target="_blank" class="download-option">
+                    <span class="download-icon"><i class="fa-brands fa-github"></i></span>
+                    <span>GitHub Releases</span>
+                  </a>
+                )}
+                {app.downloads.sourceforge && (
+                  <a href={app.downloads.sourceforge} target="_blank" class="download-option">
+                    <img class="download-icon" src="https://a.fsdn.com/con/img/sandiego/logo-180x180.png"></img>
+                    <span>SourceForge</span>
+                  </a>
+                )}
+                <a href={app.downloads.sourceCode} target="_blank" class="download-option">
+                  <span class="download-icon"><i class="fa-solid fa-code"></i></span>
+                  <span>Ver Código</span>
+                </a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para ver imagenes en grande -->
+  <div id="imageModal" class="image-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Cerrar modal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <img id="modalImage" src="" alt="" class="modal-image" />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .app-detail {
+    min-height: calc(100vh - 140px);
+  }
+
+  .app-header {
+    background: linear-gradient(135deg, #3db6ff 0%, #2a9de6 100%);
+    color: white;
+    padding: 30px 0 60px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    margin-bottom: 30px;
+    transition: var(--transition);
+    opacity: 0.9;
+  }
+
+  .back-link:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+  }
+
+  .app-header-content {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+  }
+
+  .app-icon-large {
+    flex-shrink: 0;
+  }
+
+  .icon-image-large {
+    width: 120px;
+    height: 120px;
+    border-radius: var(--radius-lg);
+    object-fit: cover;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .app-header-info {
+    flex: 1;
+  }
+
+  .app-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+
+  .app-short-desc {
+    font-size: 1.15rem;
+    opacity: 0.95;
+    margin-bottom: 20px;
+  }
+
+  .app-platforms-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+
+  .platform-badge-large {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .app-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .app-content {
+    padding: 40px 0;
+    margin-top: -30px;
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 30px;
+  }
+
+  .description-section {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .content-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 30px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+  }
+
+  /* Markdown Content */
+  .markdown-content {
+    line-height: 1.8;
+    color: var(--text-primary);
+  }
+
+  .markdown-content :global(h1) {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .markdown-content :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 32px;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+  }
+
+  .markdown-content :global(h3) {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .markdown-content :global(p) {
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+  }
+
+  .markdown-content :global(ul) {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+  }
+
+  .markdown-content :global(li) {
+    padding-left: 28px;
+    margin-bottom: 8px;
+    position: relative;
+    color: var(--text-secondary);
+  }
+
+  .markdown-content :global(li::before) {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .markdown-content :global(strong) {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* Screenshots */
+  .screenshots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .screenshot-item {
+    aspect-ratio: 16/10;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .screenshot-item:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+  }
+
+  .screenshot-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Modal de Imagenes */
+  .image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .image-modal.active {
+    display: flex;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+
+  .modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    z-index: 10000;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: rotate(90deg);
+  }
+
+  .modal-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    object-fit: contain;
+  }
+
+  /* Video */
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+  }
+
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Sidebar */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .info-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .info-item:last-child {
+    border-bottom: none;
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .info-value {
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .download-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .download-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+  }
+
+  .download-option:hover {
+    background: white;
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateX(4px);
+  }
+
+  .download-icon {
+    width: auto;
+    height: 20px;
+  }
+
+  @media (max-width: 968px) {
+    .content-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      order: -1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .app-header-content {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .app-title {
+      font-size: 1.75rem;
+    }
+
+    .app-short-desc {
+      font-size: 1rem;
+    }
+
+    .app-actions {
+      justify-content: center;
+    }
+
+    .app-platforms-list {
+      justify-content: center;
+    }
+
+    .icon-image-large {
+      width: 100px;
+      height: 100px;
+    }
+
+    .screenshots-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Animate header
+    gsap.from('.app-icon-large', {
+      scale: 0,
+      duration: 0.5,
+      ease: 'back.out(1.7)'
+    });
+
+    gsap.from('.app-title', {
+      opacity: 0,
+      x: -30,
+      duration: 0.6,
+      delay: 0.15,
+      ease: 'power3.out'
+    });
+
+    gsap.from('.app-short-desc', {
+      opacity: 0,
+      x: -30,
+      duration: 0.6,
+      delay: 0.25,
+      ease: 'power3.out'
+    });
+
+    gsap.from('.platform-badge-large', {
+      opacity: 0,
+      y: 20,
+      duration: 0.4,
+      delay: 0.35,
+      stagger: 0.04,
+      ease: 'power2.out',
+      clearProps: 'all'
+    });
+
+    gsap.from('.app-actions .btn', {
+      opacity: 0,
+      y: 20,
+      duration: 0.4,
+      delay: 0.4,
+      stagger: 0.08,
+      ease: 'power2.out',
+      clearProps: 'all'
+    });
+
+    // Animate content cards
+    gsap.from('.content-card', {
+      opacity: 0,
+      y: 20,
+      duration: 0.5,
+      delay: 0.5,
+      stagger: 0.1,
+      ease: 'power3.out',
+      clearProps: 'all'
+    });
+
+    // Animate screenshots
+    const screenshots = document.querySelectorAll('.screenshot-anim');
+    gsap.from(screenshots, {
+      opacity: 0,
+      scale: 0.9,
+      duration: 0.4,
+      delay: 0.7,
+      stagger: 0.06,
+      ease: 'back.out(1.7)',
+      clearProps: 'all'
+    });
+
+    // Download button animation
+    const downloadBtns = document.querySelectorAll('.download-btn');
+    downloadBtns.forEach(btn => {
+      btn.addEventListener('mouseenter', (e) => {
+        gsap.to(e.currentTarget, {
+          scale: 1.05,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+
+      btn.addEventListener('mouseleave', (e) => {
+        gsap.to(e.currentTarget, {
+          scale: 1,
+          duration: 0.3,
+          ease: 'power2.out'
+        });
+      });
+    });
+
+    // Modal de imagenes
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.querySelector('.modal-close');
+    const modalOverlay = document.querySelector('.modal-overlay');
+    const screenshotItems = document.querySelectorAll('.screenshot-item');
+
+    // Abrir modal al hacer click en una captura
+    screenshotItems.forEach(item => {
+      const openModal = () => {
+        const img = item.querySelector('.screenshot-image');
+        modalImage.src = img.src;
+        modalImage.alt = img.alt;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Animacion de entrada
+        gsap.fromTo(modalOverlay,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3, ease: 'power2.out' }
+        );
+        gsap.fromTo(modalImage,
+          { opacity: 0, scale: 0.8 },
+          { opacity: 1, scale: 1, duration: 0.4, ease: 'back.out(1.7)' }
+        );
+      };
+
+      item.addEventListener('click', openModal);
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal();
+        }
+      });
+    });
+
+    // Cerrar modal
+    const closeModal = () => {
+      gsap.to(modalOverlay, {
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.in'
+      });
+      gsap.to(modalImage, {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+          modalImage.src = '';
+          modalImage.alt = '';
+        }
+      });
+    };
+
+    modalClose.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
+
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+      }
+    });
+  });
+</script>
