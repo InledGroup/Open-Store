@@ -376,14 +376,7 @@ Símplemente descarga y descomprime el .zip, habilita el modo desarrollador en l
     shortDescription: 'Abre la página en archive.is a un clic',
     description: `# Accede a contenido ilimitado
 
-Gracias a Archive.is puedes disfrutar de descubrir las múltiples capturas de una página, pero además puedes **ver el periódico sin muro de pago.**
-
-Esta funcionalidad es ofrecida por Archive.is para almacenar completamente la página, lo cual permite ver la noticia completa sin el "paywall".
-
-Hay diferentes tipos de paywall o muros de pago:
-
-- **Paywalls blandos:**la noticia se carga completa y se superpone un recuadro solicitándote que inicies sesión
-- **Paywalls duros:**son páginas cuyo contenido completo no se carga hasta que inicias sesión y se verifica que eres suscriptor. Estos paywalls son más difíciles de burlar.
+Gracias a Archive.is puedes disfrutar de descubrir las múltiples capturas de una página web.
 
 ## Instala la extensión
 
