@@ -38,7 +38,7 @@ function markdownToHtml(markdown: string): string {
 const descriptionHtml = markdownToHtml(app.description);
 ---
 
-<Layout title={`${app.title} - Inled Open Store`} description={app.shortDescription}>
+<Layout title={`${app.title} - Inled Open Store`} description={app.shortDescription} redirect={`https://inled.es/apps/${app.id}/`}>
   <div class="app-detail">
     <!-- Header de la app -->
     <div class="app-header">

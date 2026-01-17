@@ -2,9 +2,10 @@
 interface Props {
   title: string;
   description?: string;
+  redirect?: string;
 }
 
-const { title, description = 'Descubre las mejores aplicaciones para tu dispositivo' } = Astro.props;
+const { title, description = 'Descubre las mejores aplicaciones para tu dispositivo', redirect } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -13,6 +14,15 @@ const { title, description = 'Descubre las mejores aplicaciones para tu disposit
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content={description}>
+  {redirect && (
+    <>
+      <meta http-equiv="refresh" content={`0;url=${redirect}`} />
+      <link rel="canonical" href={redirect} />
+      <script define:vars={{ redirect }}>
+        window.location.href = redirect;
+      </script>
+    </>
+  )}
   <title>{title}</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
